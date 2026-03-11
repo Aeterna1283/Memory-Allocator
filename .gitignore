@@ -1,0 +1,5 @@
+*.o
+alloc
+*.exe
+*.swp
+.vscode/
