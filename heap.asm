@@ -2,10 +2,12 @@ bits 64 ;64 bit systems
 global memspace
 %define Heapsize (1024*1024*1024/8)  
 
-Section .data alloc noexec write progbit
+Section .data alloc noexec write progbits
+    memspace:
+        dq _memspace
 
 Section .heap alloc noexec write nobits
-    memspace:
+    _memspace:
         heapsize equ Heapsize 
         resq heapsize ;quad word is reserved
 

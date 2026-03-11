@@ -25,7 +25,6 @@ struct packed s_header
     word w:30;
     bool allocated:1;
     bool unused reserved:1;
-
 };
 typedef struct packed s_header header;
 
