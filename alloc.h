@@ -7,9 +7,13 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
+#include <stdint.h>
 
 #define packed __attribute__((__packed__))
 #define unused __attribute__((__unused__))
+#define Maxwords ((1024 * 1024 * 1024/4) - 1)
+
+#define ErrNoMem 1
 
 
 typedef unsigned char int8;
@@ -39,5 +43,8 @@ typedef struct packed s_header header;
 #define $v (void *)
 #define $h (header *)
 
+#define reterr(x) errno = (x); return $v 0 
+
+void *mkalloc(word, header*); //make the allocation
 void *alloc(int32); //malloc
 int main(int, char**);
