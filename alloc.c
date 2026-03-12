@@ -3,6 +3,42 @@
 
 extern heap *memspace;
 
+header *findblock_(header *hdr, word allocation, word n)
+{
+    bool okay;
+    void *mem;
+    header *hdr_;
+    word n_;
+
+    if((n + allocation) > (Maxwords - 2 ))
+    {
+        reterr(ErrNoMem);
+    }
+
+
+    okay = (!(hdr->w)) ? true :
+    (!(hdr->allocated) && (hdr->w >= allocation)) ? true :
+    false;
+
+
+    if(okay)
+    {
+        return hdr;
+    }
+
+    else
+    {
+        mem = $v hdr + hdr->w;
+        hdr_ = $h mem;
+        n_ = n + hdr->w;
+
+        return findblock_(hdr_, allocation, n_); //beautiful recursion
+
+    }
+
+    reterr(ErrUnknown);
+}
+
 void *mkalloc(word words, header *hdr)
 {
     void *ret, *bytesin;
@@ -75,10 +111,21 @@ void *alloc(int32 bytes)
 
 int main(int argc, char *argv[])
 {
+    header *p;
 
-    int8 *p;
+    // int8 *p;
 
-    p = alloc(7);
+    // p = alloc(7);
+    // printf("%p
+    p = findblock(500);
+
+    if(!p)
+    {
+        printf("Error %d\n", errno);
+        return - 1;
+    }
+
+    printf("%p\n", memspace);
     printf("%p\n", p);
 
     return 0;
