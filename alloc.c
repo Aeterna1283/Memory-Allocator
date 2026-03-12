@@ -98,6 +98,20 @@ void *alloc(int32 bytes)
     return mem;
 }
 
+void show_(header *hdr)
+{
+    header *p;
+    void *mem;
+    int32 n;
+
+    for(n = 1, p = hdr; p->w; mem=$v p + ((p->w + 1) * 4), p=mem, n++)
+    {
+        printf("Alloc %d = %d %s words\n", n, p->w, (p->allocated) ? "allocated" : "free");
+
+    }
+    return;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -125,7 +139,9 @@ int main(int argc, char *argv[])
     printf("Allocated2: %p\n", p2);
 
     p3 = alloc(1);
-    printf("Allocated3: %p\n", p3);
+    printf("Allocated3: %p\n\n", p3);
+
+    show();
 
     return 0;
 }

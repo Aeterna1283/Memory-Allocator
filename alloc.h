@@ -49,10 +49,10 @@ typedef struct packed s_header header;
     return $v 0; \
 } while(false)
 
-#define findblock(x) findblock_((header *)memspace, (x), 0)
+#define findblock(x) findblock_($h memspace, (x), 0)
+#define show() show_($h memspace)
 
-
-
+void show_(header*);
 header *findblock_(header*, word, word);
 void *mkalloc(word, header*); //make the allocation
 void *alloc(int32); //malloc
