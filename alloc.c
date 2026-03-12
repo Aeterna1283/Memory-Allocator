@@ -28,7 +28,7 @@ header *findblock_(header *hdr, word allocation, word n)
 
     else
     {
-        mem = $v hdr + hdr->w;
+        mem = $v hdr + (hdr->w * 4) + 4;
         hdr_ = $h mem;
         n_ = n + hdr->w;
 
@@ -73,60 +73,59 @@ void *alloc(int32 bytes)
 
     words = (!(bytes % 4)) ? bytes / 4 : (bytes/4) + 1;
 
-    mem = $v memspace;
-    hdr = $h mem; 
+    hdr = findblock(words); 
+    if(!hdr)
+    {
+        return $v 0;
+    }
 
     //hdr->w = 1;
+    // printf("empty \n");
+    // exit(0);
 
-    if(!(hdr->w)) 
+    if(words > Maxwords)
     {
-        // printf("empty \n");
-        // exit(0);
-        if(words > Maxwords)
-        {
-            reterr(ErrNoMem);
-        }
-
-        mem = mkalloc(words, hdr);
-
-        if(!mem)
-        {
-            return $v 0;
-        }
-
-        return mem;
+        reterr(ErrNoMem);
     }
 
-    else
-     {
-        // printf("blank\n");
-        // exit(0);
-        (void)0;
+    mem = mkalloc(words, hdr);
+
+    if(!mem)
+    {
+        return $v 0;
     }
 
-    return $v 0;
-
+    return mem;
 }
 
 
 int main(int argc, char *argv[])
 {
-    header *p;
+    header *hdr;
 
-    // int8 *p;
+    int8 *p;
+    int8 *p2;
+    int8 *p3;
 
-    // p = alloc(7);
-    // printf("%p
-    p = findblock(500);
+    p = alloc(7);
+    printf("Allocated1: %p\n", p);
+    
+    hdr = findblock(500);
 
-    if(!p)
+    if(!hdr)
     {
         printf("Error %d\n", errno);
         return - 1;
     }
 
-    printf("%p\n", memspace);
-    printf("%p\n", p);
+    printf("Memspace = %p\n", memspace);
+    printf("Block = %p\n", hdr);
+
+    p2 = alloc(2000);
+    printf("Allocated2: %p\n", p2);
+
+    p3 = alloc(1);
+    printf("Allocated3: %p\n", p3);
 
     return 0;
 }
