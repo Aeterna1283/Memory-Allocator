@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <stdint.h>
 
+#define public __attribute__((visibility("default")))
+#define private static
 #define packed __attribute__((__packed__))
 #define unused __attribute__((__unused__))
 #define Maxwords ((1024 * 1024 * 1024/4) - 1)
@@ -51,9 +53,13 @@ typedef struct packed s_header header;
 
 #define findblock(x) findblock_($h memspace, (x), 0)
 #define show() show_($h memspace)
+#define allock(x) alloc((x)*1024)
+#define allocm(x) alloc((x)*(1024*1024))
+#define allog(x) allocm((x)* 1024)
 
-void show_(header*);
-header *findblock_(header*, word, word);
-void *mkalloc(word, header*); //make the allocation
-void *alloc(int32); //malloc
+public bool destroy(void*); //free memory
+private void show_(header*);
+private header *findblock_(header*, word, word);
+private void *mkalloc(word, header*); //make the allocation
+public void *alloc(int32); //malloc
 int main(int, char**);
