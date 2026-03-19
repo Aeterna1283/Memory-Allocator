@@ -6,28 +6,33 @@ extern heap *memspace; //links with global memspace from heap.asm after compilat
 public void zero(int8 *str, int16 size)
 {
     int8 *p;
-    int16 *n;
+    int16 n;
 
-    for(n = 0; p = str; n < size; n++, p++)
+    for (n=0, p=str; n<size; n++, p++)
     {
         *p = 0;
     }
+    
 
     return;
-
 }
 
 public bool destroy(void *addr)
 {
     header *p;
-    int16 *n;
+    int16 n;
     //cannot calc first word of header because the adress is the first word of the allocation
     //which means going back one word reaches the header
 
     p = ($h addr) - 4;
-    if(!(p->w) || (!(p->alloc)))
+    if(!(p->w) || (!(p->allocated)))
         reterr(Err2xFree );
     
+    n = (p->w * 4);
+    zero($1 addr, n);
+    p->allocated = false;
+
+    return true;
 }
 
 private header *findblock_(header *hdr, word allocation, word n)
@@ -147,6 +152,8 @@ int main(int argc, char *argv[])
     int8 *p;
     int8 *p2;
     int8 *p3;
+    int8 *p4;
+    bool end;
 
     p = alloc(7);
     printf("Allocated1: %p\n", p);
@@ -167,6 +174,11 @@ int main(int argc, char *argv[])
 
     p3 = alloc(1);
     printf("Allocated3: %p\n\n", p3);
+
+    p4 = alloc(1800);
+
+    end = destroy(p2);
+    printf("\n end = %s\n", (end)?"true" : "false");
 
     show();
 

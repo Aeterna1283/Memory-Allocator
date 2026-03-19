@@ -59,7 +59,7 @@ typedef struct packed s_header header;
 #define allocm(x) alloc((x)*(1024*1024))
 #define allog(x) allocm((x)* 1024)
 
-public bool void zero(int8 *str, int16 size); //helper for zeroing out mem (hence the name)
+public void zero(int8 *str, int16 size); //helper for zeroing out mem (hence the name)
 public bool destroy(void*); //free memory
 private void show_(header*);
 private header *findblock_(header*, word, word);
