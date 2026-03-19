@@ -1,7 +1,34 @@
 /*alloc.c*/
 #include "alloc.h"
 
-extern heap *memspace;
+extern heap *memspace; //links with global memspace from heap.asm after compilation when both are .o files
+
+public void zero(int8 *str, int16 size)
+{
+    int8 *p;
+    int16 *n;
+
+    for(n = 0; p = str; n < size; n++, p++)
+    {
+        *p = 0;
+    }
+
+    return;
+
+}
+
+public bool destroy(void *addr)
+{
+    header *p;
+    int16 *n;
+    //cannot calc first word of header because the adress is the first word of the allocation
+    //which means going back one word reaches the header
+
+    p = ($h addr) - 4;
+    if(!(p->w) || (!(p->alloc)))
+        reterr(Err2xFree );
+    
+}
 
 private header *findblock_(header *hdr, word allocation, word n)
 {

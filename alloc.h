@@ -15,8 +15,10 @@
 #define unused __attribute__((__unused__))
 #define Maxwords ((1024 * 1024 * 1024/4) - 1)
 
+#define ErrNoErr    0
 #define ErrNoMem    1
 #define ErrUnknown  2
+#define Err2xFree   4
 
 
 typedef unsigned char int8;
@@ -57,6 +59,7 @@ typedef struct packed s_header header;
 #define allocm(x) alloc((x)*(1024*1024))
 #define allog(x) allocm((x)* 1024)
 
+public bool void zero(int8 *str, int16 size); //helper for zeroing out mem (hence the name)
 public bool destroy(void*); //free memory
 private void show_(header*);
 private header *findblock_(header*, word, word);
