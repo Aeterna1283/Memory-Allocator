@@ -21,12 +21,19 @@ public bool destroy(void *addr)
 {
     header *p;
     int16 n;
+    void *mem;
     //cannot calc first word of header because the adress is the first word of the allocation
     //which means going back one word reaches the header
 
-    p = ($h addr) - 4;
+    mem = addr - 4;
+    p = $h mem;
+    
     if(!(p->w) || (!(p->allocated)))
         reterr(Err2xFree );
+    else
+    {
+        (void)0;
+    }
     
     n = (p->w * 4);
     zero($1 addr, n);
@@ -47,11 +54,17 @@ private header *findblock_(header *hdr, word allocation, word n)
         reterr(ErrNoMem);
     }
 
+    printf("  Trying 0x%.08x\n", $i ($1 hdr +4));
 
     okay = (!(hdr->w)) ? true :
     (!(hdr->allocated) && (hdr->w >= allocation)) ? true :
     false;
 
+    printf("okay = %s\n", (okay)? "True" : "false");
+    printf("hdr->w = %d\n", $i hdr ->w);
+    printf("hdr-> allocated = %s\n", (hdr->allocated)? "True" : "false");
+    printf("allocation = %d\n", $i allocation);
+    
 
     if(okay)
     {
@@ -60,7 +73,7 @@ private header *findblock_(header *hdr, word allocation, word n)
 
     else
     {
-        mem = $v hdr + (hdr->w * 4) + 4;
+        mem = $v (($1 hdr) + (hdr->w * 4) + 4);
         hdr_ = $h mem;
         n_ = n + hdr->w;
 
@@ -138,7 +151,7 @@ private void show_(header *hdr)
 
     for(n = 1, p = hdr; p->w; mem=$v p + ((p->w + 1) * 4), p=mem, n++)
     {
-        printf("Alloc %d = %d %s words\n", n, p->w, (p->allocated) ? "allocated" : "free");
+        printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
 
     }
     return;
@@ -155,7 +168,8 @@ int main(int argc, char *argv[])
     int8 *p4;
     bool end;
 
-    p = alloc(7);
+    p = alloc(7); //rounds up to 8
+    printf("p = 0x%.08x\n", $i p);
     printf("Allocated1: %p\n", p);
     
     hdr = findblock(500);
@@ -172,13 +186,13 @@ int main(int argc, char *argv[])
     p2 = alloc(2000);
     printf("Allocated2: %p\n", p2);
 
-    p3 = alloc(1);
+    p3 = alloc(1); //rounds up to 4
     printf("Allocated3: %p\n\n", p3);
 
     p4 = alloc(1800);
 
     end = destroy(p2);
-    printf("\n end = %s\n", (end)?"true" : "false");
+    printf("\nend = %s\n", (end)?"true" : "false");
 
     show();
 
