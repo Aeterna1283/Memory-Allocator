@@ -1,4 +1,4 @@
-/*alloc.c*/
+*alloc.c*/
 #include "alloc.h"
 
 extern heap *memspace; //links with global memspace from heap.asm after compilation when both are .o files
@@ -35,6 +35,7 @@ public bool destroy(void *addr)
         (void)0;
     }
     
+    //printf(" -- freeing addr 0x%.08x with hdr 0X \n%", $i addr, $i p);
     n = (p->w * 4);
     zero($1 addr, n);
     p->allocated = false;
@@ -54,16 +55,16 @@ private header *findblock_(header *hdr, word allocation, word n)
         reterr(ErrNoMem);
     }
 
-    printf("  Trying 0x%.08x\n", $i ($1 hdr +4));
+    //printf("  Trying 0x%.08x\n", $i ($1 hdr +4));
 
     okay = (!(hdr->w)) ? true :
     (!(hdr->allocated) && (hdr->w >= allocation)) ? true :
     false;
 
-    printf("okay = %s\n", (okay)? "True" : "false");
-    printf("hdr->w = %d\n", $i hdr ->w);
-    printf("hdr-> allocated = %s\n", (hdr->allocated)? "True" : "false");
-    printf("allocation = %d\n", $i allocation);
+    // printf("okay = %s\n", (okay)? "True" : "false");
+    // printf("hdr->w = %d\n", $i hdr ->w);
+    // printf("hdr-> allocated = %s\n", (hdr->allocated)? "True" : "false");
+    // printf("allocation = %d\n", $i allocation);
     
 
     if(okay)
@@ -151,7 +152,7 @@ private void show_(header *hdr)
 
     for(n = 1, p = hdr; p->w; mem=$v p + ((p->w + 1) * 4), p=mem, n++)
     {
-        printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
+        printf("0x%.08ls Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
 
     }
     return;
@@ -169,7 +170,7 @@ int main(int argc, char *argv[])
     bool end;
 
     p = alloc(7); //rounds up to 8
-    printf("p = 0x%.08x\n", $i p);
+    printf("p = 0x%.08ls\n", $i p);
     printf("Allocated1: %p\n", p);
     
     hdr = findblock(500);
@@ -189,10 +190,12 @@ int main(int argc, char *argv[])
     p3 = alloc(1); //rounds up to 4
     printf("Allocated3: %p\n\n", p3);
 
+
+    destroy(p2);
+
     p4 = alloc(1800);
 
-    end = destroy(p2);
-    printf("\nend = %s\n", (end)?"true" : "false");
+    //printf("\nend = %s\n", (end)?"true" : "false");
 
     show();
 

@@ -44,7 +44,7 @@ typedef struct packed s_header header;
 #define $8 (int64)
 #define $16 (int128) 
 #define $c (char *)
-#define $i (int)
+#define $i (int *)
 #define $v (void *)
 #define $h (header *)
 
