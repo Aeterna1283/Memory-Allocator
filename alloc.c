@@ -1,4 +1,4 @@
-*alloc.c*/
+/*alloc.c*/
 #include "alloc.h"
 
 extern heap *memspace; //links with global memspace from heap.asm after compilation when both are .o files
