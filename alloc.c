@@ -35,8 +35,9 @@ public bool destroy(void *addr)
         (void)0;
     }
     
-    //printf(" -- freeing addr 0x%.08x with hdr 0X \n%", $i addr, $i p);
+    //printf(" - freeing addr 0x%.08x with hdr 0X \n%", $i addr, $i p);
     n = (p->w * 4);
+    printf("addr = 0x%.08x, n = %d\n", $i addr, $i n);
     zero($1 addr, n);
     p->allocated = false;
 
@@ -161,34 +162,34 @@ private void show_(header *hdr)
 
 int main(int argc, char *argv[])
 {
-    header *hdr;
+    //header *hdr;
 
     int8 *p;
     int8 *p2;
     int8 *p3;
     int8 *p4;
-    bool end;
+    //bool end;
 
     p = alloc(7); //rounds up to 8
-    printf("p = 0x%.08ls\n", $i p);
-    printf("Allocated1: %p\n", p);
+    //printf("p = 0x%.08ls\n", $i p);
+    //printf("Allocated1: %p\n", p);
     
-    hdr = findblock(500);
+    //hdr = findblock(500);
 
-    if(!hdr)
-    {
-        printf("Error %d\n", errno);
-        return - 1;
-    }
+    // if(!hdr)
+    // {
+    //     printf("Error %d\n", errno);
+    //     return - 1;
+    // }
 
-    printf("Memspace = %p\n", memspace);
-    printf("Block = %p\n", hdr);
+   // printf("Memspace = %p\n", memspace);
+    //printf("Block = %p\n", hdr);
 
     p2 = alloc(2000);
-    printf("Allocated2: %p\n", p2);
+    //printf("Allocated2: %p\n", p2);
 
     p3 = alloc(1); //rounds up to 4
-    printf("Allocated3: %p\n\n", p3);
+    //printf("Allocated3: %p\n\n", p3);
 
 
     destroy(p2);
