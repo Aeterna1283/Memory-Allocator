@@ -36,7 +36,7 @@ public bool destroy(void *addr)
     }
     
     //printf(" - freeing addr 0x%.08x with hdr 0X \n%", $i addr, $i p);
-    n = (p->w * 4);
+    n = ((p->w-1) * 4);
     printf("addr = 0x%.08x, n = %d\n", $i addr, $i n);
     zero($1 addr, n);
     p->allocated = false;
@@ -88,8 +88,9 @@ private header *findblock_(header *hdr, word allocation, word n)
 
 private void *mkalloc(word words, header *hdr)
 {
-    void *ret, *bytesin;
-    word wordsin;
+    void *ret, *bytesin, *mem;
+    word wordsin, diff;
+    header *hdr_;
 
     //calculate where the header is with pointer arithmetic
     bytesin = ($v (($v hdr) - memspace));
@@ -98,6 +99,18 @@ private void *mkalloc(word words, header *hdr)
     if(words > (Maxwords - wordsin))
     {
         reterr(ErrNoMem);
+    }
+
+    if(hdr-> w > words)
+    {
+        diff = hdr->w - words;
+
+        //if more than one
+        mem = $v hdr + (hdr->w * 4) + 4;
+        hdr_ = $h mem;
+        diff--;
+        hdr_->w = (!diff) ? ZeroWords : diff;
+        hdr_->allocated = false;
     }
 
 
@@ -153,7 +166,7 @@ private void show_(header *hdr)
 
     for(n = 1, p = hdr; p->w; mem=$v p + ((p->w + 1) * 4), p=mem, n++)
     {
-        printf("0x%.08ls Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
+        printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
 
     }
     return;
@@ -194,11 +207,11 @@ int main(int argc, char *argv[])
 
     destroy(p2);
 
+    show();
+
     p4 = alloc(1800);
 
     //printf("\nend = %s\n", (end)?"true" : "false");
-
-    show();
 
     return 0;
 }

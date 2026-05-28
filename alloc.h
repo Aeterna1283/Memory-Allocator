@@ -14,6 +14,7 @@
 #define packed __attribute__((__packed__))
 #define unused __attribute__((__unused__))
 #define Maxwords ((1024 * 1024 * 1024/4) - 1)
+#define ZeroWords (word) - 1
 
 #define ErrNoErr    0
 #define ErrNoMem    1
@@ -44,7 +45,7 @@ typedef struct packed s_header header;
 #define $8 (int64)
 #define $16 (int128) 
 #define $c (char *)
-#define $i (int *)
+#define $i (int)
 #define $v (void *)
 #define $h (header *)
 
