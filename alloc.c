@@ -29,7 +29,7 @@ public bool destroy(void *addr)
 
     mem = addr - 4;
     p = $h mem;
-    w = (p->w) ? 0 : p-> w;
+    w = (p->w == ZeroWords) ? 0 : p-> w;
     
     if((!w) || (!(p->allocated)))
         reterr(Err2xFree );
@@ -112,13 +112,13 @@ private void *mkalloc(word words, header *hdr)
         diff = hdr->w - words;
 
         //if more than one
-        mem = $v (($1 hdr) + (hdr->w * 4) + 4);
+        mem = $v (($1 hdr) + (words * 4) + 4);
         hdr_ = $h mem;
         diff--;
         hdr_->w = (!diff) ? ZeroWords : diff;
         hdr_->allocated = false;
 
-        printf("Inserting new hdr address = 0x%.08x, w=%d, allocated=%d\n, $i hdr_, hdr->w, hdr_->allocated");
+        //printf("Inserting new hdr address = 0x%.08x, w=%d, allocated=%d\n, $i hdr_, hdr->w, hdr_->allocated");
     }
 
 
@@ -173,8 +173,8 @@ private void show_(header *hdr)
     int32 n;
     word w;
 
-    for(n = 1, p = hdr, w=(p->w == ZeroWords) ? 0 : p->w; p->w; w = (p->w == ZeroWords) ? 0 : p->w,
-        mem=$v p + ((w + 1) * 4), p=mem, n++)
+    for(n = 1, p = hdr, w=(p->w == ZeroWords) ? 0 : p->w; p->w; mem=$v p + ((w + 1) * 4), 
+        p=mem, w = (p->w == ZeroWords) ? 0 : p->w, n++)
     {
         printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, w, (p->allocated) ? "allocated" : "free");
 
@@ -214,12 +214,9 @@ int main(int argc, char *argv[])
     p3 = alloc(10); //rounds up to 4
     //printf("Allocated3: %p\n\n", p3);
 
-    show();
-
-
     destroy(p2);
 
-    p4 = alloc(1800);
+    p4 = alloc(1996);
 
      show();
 
