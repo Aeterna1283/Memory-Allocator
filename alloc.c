@@ -22,13 +22,16 @@ public bool destroy(void *addr)
     header *p;
     int16 n;
     void *mem;
+    word w;
+
     //cannot calc first word of header because the adress is the first word of the allocation
     //which means going back one word reaches the header
 
     mem = addr - 4;
     p = $h mem;
+    w = (p->w) ? 0 : p-> w;
     
-    if(!(p->w) || (!(p->allocated)))
+    if((!w) || (!(p->allocated)))
         reterr(Err2xFree );
     else
     {
@@ -37,7 +40,7 @@ public bool destroy(void *addr)
     
     //printf(" - freeing addr 0x%.08x with hdr 0X \n%", $i addr, $i p);
     n = ((p->w-1) * 4);
-    printf("addr = 0x%.08x, n = %d\n", $i addr, $i n);
+    //printf("addr = 0x%.08x, n = %d\n", $i addr, $i n);
     zero($1 addr, n);
     p->allocated = false;
 
@@ -49,17 +52,20 @@ private header *findblock_(header *hdr, word allocation, word n)
     bool okay;
     void *mem;
     header *hdr_;
-    word n_;
+    word n_,w;
 
     if((n + allocation) > (Maxwords - 2 ))
     {
         reterr(ErrNoMem);
     }
 
+
     //printf("  Trying 0x%.08x\n", $i ($1 hdr +4));
 
-    okay = (!(hdr->w)) ? true :
-    (!(hdr->allocated) && (hdr->w >= allocation)) ? true :
+    w = (hdr->w == ZeroWords) ? 0 : hdr->w;
+
+    okay = (!hdr->w) ? true :
+    (!(hdr->allocated) && (w >= allocation)) ? true :
     false;
 
     // printf("okay = %s\n", (okay)? "True" : "false");
@@ -75,9 +81,9 @@ private header *findblock_(header *hdr, word allocation, word n)
 
     else
     {
-        mem = $v (($1 hdr) + (hdr->w * 4) + 4);
+        mem = $v (($1 hdr) + (w * 4) + 4);
         hdr_ = $h mem;
-        n_ = n + hdr->w;
+        n_ = n + w;
 
         return findblock_(hdr_, allocation, n_); //beautiful recursion
 
@@ -106,11 +112,13 @@ private void *mkalloc(word words, header *hdr)
         diff = hdr->w - words;
 
         //if more than one
-        mem = $v hdr + (hdr->w * 4) + 4;
+        mem = $v (($1 hdr) + (hdr->w * 4) + 4);
         hdr_ = $h mem;
         diff--;
         hdr_->w = (!diff) ? ZeroWords : diff;
         hdr_->allocated = false;
+
+        printf("Inserting new hdr address = 0x%.08x, w=%d, allocated=%d\n, $i hdr_, hdr->w, hdr_->allocated");
     }
 
 
@@ -163,10 +171,12 @@ private void show_(header *hdr)
     header *p;
     void *mem;
     int32 n;
+    word w;
 
-    for(n = 1, p = hdr; p->w; mem=$v p + ((p->w + 1) * 4), p=mem, n++)
+    for(n = 1, p = hdr, w=(p->w == ZeroWords) ? 0 : p->w; p->w; w = (p->w == ZeroWords) ? 0 : p->w,
+        mem=$v p + ((w + 1) * 4), p=mem, n++)
     {
-        printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, p->w, (p->allocated) ? "allocated" : "free");
+        printf("0x%.08x Alloc %d = %d %s words\n", $i ($1 p+4), n, w, (p->allocated) ? "allocated" : "free");
 
     }
     return;
@@ -201,15 +211,17 @@ int main(int argc, char *argv[])
     p2 = alloc(2000);
     //printf("Allocated2: %p\n", p2);
 
-    p3 = alloc(1); //rounds up to 4
+    p3 = alloc(10); //rounds up to 4
     //printf("Allocated3: %p\n\n", p3);
+
+    show();
 
 
     destroy(p2);
 
-    show();
-
     p4 = alloc(1800);
+
+     show();
 
     //printf("\nend = %s\n", (end)?"true" : "false");
 
